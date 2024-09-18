@@ -9,12 +9,13 @@
 		"prettier:format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,json}' "
 	},
 	"dependencies": {
+		"fuzzy-search": "^3.2.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-figma-plugin-ds": "^2.3.0"
 	},
 	"devDependencies": {
-		"@figma/plugin-typings": "^1.24.0",
+		"@figma/plugin-typings": "^1.49.0",
 		"@types/react": "^17.0.11",
 		"@types/react-dom": "^17.0.7",
 		"css-loader": "^5.0.1",

@@ -1,0 +1,66 @@
+.df {
+    display: flex;
+}
+
+.dfc {
+    display: flex;
+    flex-direction: column;
+}
+
+.jc {
+    justify-content: center;
+}
+
+.jb {
+    justify-content: space-between;
+}
+
+.aic {
+    align-items: center;
+}
+
+.ais {
+    align-items: stretch;
+}
+
+.mx2 {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.mt2 {
+    margin-top: 16px;
+}
+
+.pl1 {
+    padding-left: 8px;
+}
+
+.pr1 {
+    padding-right: 8px;
+}
+
+.px1 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.pb0-5 {
+    padding-bottom: 4px;
+}
+
+.pb1 {
+    padding-bottom: 8px;
+}
+
+.tr {
+    text-align: right;
+}
+
+.tl {
+    text-align: left;
+}
+
+.fsi {
+    font-style: italic !important;
+}

@@ -1,46 +1,155 @@
 import * as React from 'react';
+import {useState, useEffect} from 'react';
+// import { Text } from 'react-figma-plugin-ds';
 import '../styles/ui.css';
+import '../styles/util.css';
+import commands, {RunCmdFn, Cmd} from '../commands';
+import ArgsGetter from './ArgsGetter';
 
-declare function require(path: string): any;
+const useCmds = (parent) => {
+    const [cbs, setCbs] = useState({});
+
+    const runCmd: RunCmdFn = React.useCallback(
+        (msg) => {
+            const id = Math.random();
+            return new Promise((resolve, reject) => {
+                // set up response chain
+                const timeoutMs = 5000;
+                const timeout = setTimeout(
+                    () => reject('No response received within ' + timeoutMs + 'ms for ' + JSON.stringify(msg)),
+                    timeoutMs
+                );
+                setCbs({
+                    ...cbs,
+                    [id]: (retVal) => {
+                        // clean up handler/timeout
+                        clearTimeout(timeout);
+                        const newCbs = {...cbs};
+                        delete newCbs[id];
+                        setCbs(newCbs);
+
+                        // return response from command
+                        resolve(retVal);
+                    },
+                });
+
+                // run cmd
+                parent.postMessage({pluginMessage: {...msg, resId: id}}, '*');
+            });
+        },
+        [cbs]
+    );
+
+    const respondToMessage = React.useCallback(
+        ({pluginMessage}) => {
+            const {resId, retVal} = pluginMessage;
+            // console.log({ resId, retVal });
+            if (resId && cbs[resId]) cbs[resId](retVal);
+        },
+        [cbs]
+    );
+
+    useEffect(() => {
+        onmessage = (msg) => {
+            if (msg.data === 'focus') {
+                // special command, not part of the set; set up by dropping code into the console (see cmds.fh)
+                /* @ts-ignore */
+                document.querySelector('#zephyr')?.focus();
+                return;
+            }
+            respondToMessage(msg.data);
+        };
+    }, [respondToMessage]);
+
+    return runCmd;
+};
 
 const App = ({}) => {
-    const textbox = React.useRef<HTMLInputElement>(undefined);
+    const [inputVal, setInputVal] = useState('');
+    const [matches, setMatches] = useState(commands);
+    const [match, setMatch] = useState<Cmd<any>>(null);
 
-    const countRef = React.useCallback((element: HTMLInputElement) => {
-        if (element) element.value = '5';
-        textbox.current = element;
+    const runCmd = useCmds(window.parent);
+
+    useEffect(() => {
+        if (!inputVal.endsWith(' ')) {
+            if (inputVal === '') {
+                setMatches(commands);
+            } else {
+                setMatches(commands.filter((cmd) => cmd.bind.match(inputVal) || cmd.name.match(inputVal)));
+            }
+            return;
+        }
+
+        const bind = inputVal.replace(' ', '');
+        const match = commands.find((cmd) => cmd.bind === bind);
+        if (match) {
+            setMatch(match);
+            if (!match.args) runCmd({bind: match.bind}).then(() => setMatch(null));
+        } else {
+            setMatch(undefined);
+        }
+
+        setInputVal('');
+    }, [inputVal]);
+
+    const fullRunCmd = React.useCallback(
+        (payload) => {
+            runCmd({bind: match.bind, payload}).then(() => setMatch(null));
+        },
+        [match]
+    );
+
+    const reset = React.useCallback(() => {
+        setMatch(undefined);
+        setInputVal('');
     }, []);
 
-    const onCreate = () => {
-        const count = parseInt(textbox.current.value, 10);
-        parent.postMessage({pluginMessage: {type: 'create-rectangles', count}}, '*');
-    };
-
-    const onCancel = () => {
-        parent.postMessage({pluginMessage: {type: 'cancel'}}, '*');
-    };
-
-    React.useEffect(() => {
-        // This is how we read messages sent from the plugin controller
-        window.onmessage = (event) => {
-            const {type, message} = event.data.pluginMessage;
-            if (type === 'create-rectangles') {
-                console.log(`Figma Says: ${message}`);
-            }
-        };
+    const maybeEscape = React.useCallback((evt: React.KeyboardEvent) => {
+        if (evt.key === 'Escape') {
+            runCmd({bind: 'xz'});
+        }
     }, []);
 
     return (
         <div>
-            <img src={require('../assets/logo.svg')} />
-            <h2>Rectangle Creator</h2>
-            <p>
-                Count: <input ref={countRef} />
-            </p>
-            <button id="create" onClick={onCreate}>
-                Create
-            </button>
-            <button onClick={onCancel}>Cancel</button>
+            {match && match.args ? (
+                <ArgsGetter args={match.args} onFinish={fullRunCmd} onCancel={reset} runCmd={runCmd} />
+            ) : (
+                <div className="dfc ais mx2">
+                    <div className="df jb px1">
+                        <span className="caption">
+                            Ⅹ <b>Esc</b>
+                        </span>
+                        <span className="caption">
+                            <b>Space</b> ✔
+                        </span>
+                    </div>
+                    <b className="label">Action sequence</b>
+                    <input
+                        id="zephyr"
+                        value={inputVal}
+                        onChange={(event) => setInputVal(event.target.value)}
+                        autoFocus
+                        onKeyDown={maybeEscape}
+                    />
+                    <table style={{paddingLeft: 4}}>
+                        <tbody>
+                            {matches.map((cmd) => (
+                                <tr key={cmd.bind}>
+                                    <td>
+                                        <pre>
+                                            <b>{cmd.bind}</b>
+                                        </pre>
+                                    </td>
+                                    <td>-</td>
+                                    <td style={{paddingTop: 4, paddingBottom: 4}}>{cmd.name}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 };
