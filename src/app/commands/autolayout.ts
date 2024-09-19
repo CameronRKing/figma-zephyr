@@ -8,12 +8,12 @@ type UpdateFn = {
 const updateSelection = (fn: UpdateFn) =>
     figma.currentPage.selection
         .filter((node) => LayoutableNodes.includes(node.type))
-        // @ts-ignore
+        .map(node => node as Layoutable)
         .forEach(fn);
 
 const alignments = {
-    // all alignments are given for horizontal
-    // for the corresponding vertical alignment, we just switch primary & counter
+    // all alignments are given for horizontal flow
+    // for the corresponding vertical flow, switch primary & counter
     topLeft: {
         primary: 'MIN',
         counter: 'MIN',
@@ -70,84 +70,72 @@ function setAlignment(align: keyof typeof alignments) {
 export default {
     ah: {
         name: 'Autolayout: Horizontal',
-        args: [],
         async exec() {
-            updateSelection((node) => (node.layoutMode = 'HORIZONTAL'));
+            updateSelection((node) => node.layoutMode = 'HORIZONTAL');
         },
     },
     av: {
         name: 'Autolayout: Vertical',
-        args: [],
         async exec() {
-            updateSelection((node) => (node.layoutMode = 'VERTICAL'));
+            updateSelection((node) => node.layoutMode = 'VERTICAL');
         },
     },
     ar: {
         name: 'Autolayout: Remove',
-        args: [],
         async exec() {
-            updateSelection((node) => (node.layoutMode = 'NONE'));
+            updateSelection((node) => node.layoutMode = 'NONE');
         },
     },
     atl: {
         name: 'Autolayout: (Align) Top Left',
-        args: [],
         async exec() {
             updateSelection(setAlignment('topLeft'));
         },
     },
     atc: {
         name: 'Autolayout: (Align) Top Center',
-        args: [],
         async exec() {
             updateSelection(setAlignment('topCenter'));
         },
     },
     atr: {
         name: 'Autolayout: (Align) Top Right',
-        args: [],
         async exec() {
             updateSelection(setAlignment('topRight'));
         },
     },
     acl: {
         name: 'Autolayout: (Align) Center Left',
-        args: [],
         async exec() {
             updateSelection(setAlignment('left'));
         },
     },
     acc: {
         name: 'Autolayout: (Align) Center Center',
-        args: [],
         async exec() {
             updateSelection(setAlignment('center'));
         },
     },
     acr: {
         name: 'Autolayout: (Align) Center Right',
-        args: [],
         async exec() {
             updateSelection(setAlignment('right'));
         },
     },
     abl: {
         name: 'Autolayout: (Align) Bottom Left',
-        args: [],
         async exec() {
             updateSelection(setAlignment('botLeft'));
         },
     },
     abc: {
         name: 'Autolayout: (Align) Bottom Center',
-        args: [],
         async exec() {
             updateSelection(setAlignment('botCenter'));
         },
     },
     abr: {
         name: 'Autolayout: (Align) Bottom Right',
-        args: [],
         async exec() {
             updateSelection(setAlignment('botRight'));
         },
@@ -156,21 +144,21 @@ export default {
         name: 'Autolayout: (Set) Item Spacing',
         args: [{name: 'itemSpacing', type: 'livenumber', label: 'Item Spacing', prop: 'itemSpacing'}],
         async exec({itemSpacing}) {
-            updateSelection((node) => (node.itemSpacing = itemSpacing));
+            updateSelection((node) => node.itemSpacing = itemSpacing);
         },
     },
     ahp: {
         name: 'Autolayout: (Set) Horizontal Padding',
         args: [{name: 'horizontalPadding', type: 'livenumber', label: 'Horizontal Padding', prop: 'horizontalPadding'}],
         async exec({horizontalPadding}) {
-            updateSelection((node) => (node.horizontalPadding = horizontalPadding));
+            updateSelection((node) => node.horizontalPadding = horizontalPadding);
         },
     },
     avp: {
         name: 'Autolayout: (Set) Vertical Padding',
         args: [{name: 'verticalPadding', type: 'livenumber', label: 'Vertical Padding', prop: 'verticalPadding'}],
         async exec({verticalPadding}) {
-            updateSelection((node) => (node.verticalPadding = verticalPadding));
+            updateSelection((node) => node.verticalPadding = verticalPadding);
         },
     },
 };

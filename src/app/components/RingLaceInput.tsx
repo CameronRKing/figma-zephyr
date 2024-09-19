@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Text} from 'react-figma-plugin-ds';
-import {RunCmdFn, cubits} from '../commands';
+import {RunCmdFn} from '../commands';
+import { cubits } from '../commands/tensor';
 
 export default function RingLaceInput({
     onFinish,

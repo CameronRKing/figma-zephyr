@@ -1,6 +1,7 @@
 import * as React from 'react';
-import {cubits, RunCmdFn} from '../commands';
+import {RunCmdFn} from '../commands';
 import {Text} from 'react-figma-plugin-ds';
+import { cubits } from '../commands/tensor';
 
 export default function LaceLineInput({
     onFinish,
