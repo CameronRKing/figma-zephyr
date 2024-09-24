@@ -125,7 +125,7 @@ function isCmd(obj: Cmd<any> | CmdFamily): obj is Cmd<any> {
 
 const concatNames = (prelabel, name) => (prelabel.length ? prelabel + ' - ' + name : name);
 
-function flattenCmds(cmds: CmdGroup, allCmds = [], prebind = '', prelabel = '') {
+function flattenCmds(cmds: CmdGroup, allCmds = [], prebind = '', prelabel = ''): Array<Cmd<any>> {
     Object.entries(cmds).forEach(([bind, cmd]) => {
         if (isCmd(cmd)) {
             cmd.label = concatNames(prelabel, cmd.label);

@@ -78,7 +78,7 @@ const App = ({}) => {
             if (inputVal === '') {
                 setMatches(visibleCmds);
             } else {
-                setMatches(visibleCmds.filter((cmd) => cmd.bind.match(inputVal) || cmd.name.match(inputVal)));
+                setMatches(visibleCmds.filter((cmd) => cmd.bind.match(inputVal) || cmd.label.match(inputVal)));
             }
             return;
         }
@@ -146,7 +146,7 @@ const App = ({}) => {
                                         </pre>
                                     </td>
                                     <td>-</td>
-                                    <td style={{ paddingTop: 4, paddingBottom: 4 }}>{cmd.name}</td>
+                                    <td style={{ paddingTop: 4, paddingBottom: 4 }}>{cmd.label}</td>
                                 </tr>
                             ))}
                         </tbody>
