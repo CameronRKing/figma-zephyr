@@ -2,16 +2,51 @@ import internalCmds from './commands/_internal';
 import autolayoutCmds from './commands/autolayout';
 import layerCmds from './commands/layers';
 import pageCmds from './commands/pages';
-import stoneCmds from './commands/stones';
-import tensorCmds from './commands/tensor';
+import positionCmds from './commands/position';
+// import stoneCmds from './commands/stones';
+// import tensorCmds from './commands/tensor';
+
+/*
+
+    Tentative Roadmapping
+    (or at least Desired Features)
+
+    - improving internal typing
+    - improving transformations of command structures for consumers
+    - adding bind-only progressive disclosure alongside fuzzy flat search
+    - adding IDs to all commands
+        - customization/internationalization for bindings & labels
+            - including "universal" bindings like "accept" and "next/prev"
+    - writing all the design commands I want
+        - considering how to handle components & variables
+    - compressed style/prototyping display
+    - adding second pane for layers/pages + more traditional keyboard commands
+    - style macros
+        - tag touched nodes, auto-update on macro change
+        - ideally, "convert this node's style into a macro" command
+    - action macros
+    - node templates
+    - sharing customizations/macros/templates
+    - way better design for discoverability, understandability, & feel
+        - possibly animations
 
 
-// 
+    - then the writeup
+        - principles/values
+        - exposing all the alternatives left unseen + reasoning behind my choices
+        - my experiences
+        - my informal research
+        - eye forward to other friction points unsolvable by Zephyr
+        - emphasis on "to make design more frictionless we need a whole new environment... and this is what I would do"
+*/
+
 interface Cmd<Args> {
+    id: Symbol;
     bind: string;
     name: string;
     args?: Array<InputSeq<Args>>;
-    exec: ExecFn<Args>;
+    exec?: ExecFn<Args>;
+    children?: Array<Cmd<Args>>;
     hide?: boolean;
 }
 
@@ -38,43 +73,19 @@ interface OptionsFn {
 }
 
 type RunCmdFn = {
-    (arg: {bind: string; payload?: any}): Promise<any>;
+    (arg: { bind: string; payload?: any }): Promise<any>;
 };
 
 const CMDS = {
     ...autolayoutCmds,
     ...layerCmds,
     ...pageCmds,
-    ...tensorCmds,
-    ...stoneCmds,
-    gp: {
-        bind: 'gp',
-        name: 'Get position of selection',
-        exec: () => {
-            if (figma.currentPage.selection.length !== 1) return {x: null, y: null};
-            const {x, y} = figma.currentPage.selection[0];
-            return {x, y};
-        },
-    },
-    sp: {
-        bind: 'sp',
-        name: 'Set position of selection',
-        args: [
-            {name: 'x', type: 'text', label: 'x'},
-            {name: 'y', type: 'text', label: 'y'},
-        ],
-        exec: ({x, y}) => {
-            if (!x || !y) return;
-            figma.currentPage.selection.forEach((node) => {
-                node.x = x;
-                node.y = y;
-            });
-            return figma.currentPage.selection;
-        },
-    },
+    ...positionCmds,
+    // ...tensorCmds,
+    // ...stoneCmds,
     // not sure where/if these should live yet
     fh: {
-        bind: 'fh',
+        id: Symbol('focus_handler.copy'),
         name: 'Copy focus handler',
         args: [
             {
@@ -88,16 +99,27 @@ const CMDS = {
         exec: () => {},
     },
     xz: {
-        bind: 'xz',
+        id: Symbol('zephyr.exit'),
         name: 'Exit Zephyr',
         exec: () => figma.closePlugin(),
-        hide: true,
+        // hide: true,
     },
     ...internalCmds,
 };
 
 // @ts-ignore
 Object.entries(CMDS).forEach(([bind, cmd]) => (cmd.bind = bind));
+// @ts-ignore
+Object.entries(CMDS).forEach(([bind, parent]) => {
+    // @ts-ignore
+    if (parent.children) {
+        // @ts-ignore
+        Object.entries(parent.children).forEach(([bind, cmd]) => {
+            // @ts-ignore
+            cmd.bind = parent.bind + bind;
+        });
+    }
+});
 const arrayedCommands = Object.values(CMDS) as Array<Cmd<any>>;
 export default arrayedCommands;
-export {RunCmdFn, Cmd};
+export { RunCmdFn, Cmd };
