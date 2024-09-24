@@ -12,6 +12,9 @@ import positionCmds from './commands/position';
     (or at least Desired Features)
 
     - improving internal typing
+        + Cmds/CmdFamilies are an improvement
+        - RunCmd accessing commands by id rather than bind would be more semantic
+        - separating arg params into own object with typings with autocomplete would improve config experience
     - improving transformations of command structures for consumers
     - adding bind-only progressive disclosure alongside fuzzy flat search
     - adding IDs to all commands
@@ -41,13 +44,21 @@ import positionCmds from './commands/position';
 */
 
 interface Cmd<Args> {
-    id: Symbol;
-    bind: string;
-    name: string;
+    id: string; // considered using Symbols but not sure of the value at this point
+    label: string;
+    bind?: string; // added in post-processing, not directly in definition
     args?: Array<InputSeq<Args>>;
-    exec?: ExecFn<Args>;
-    children?: Array<Cmd<Args>>;
+    exec: ExecFn<Args>;
     hide?: boolean;
+}
+
+interface CmdFamily {
+    label: string;
+    children: CmdGroup;
+}
+
+interface CmdGroup {
+    [bind: string]: Cmd<any> | CmdFamily;
 }
 
 interface ExecFn<Args> {
@@ -60,9 +71,10 @@ interface InputSeq<Args> {
     prefill?: string | PrefillFn;
     options?: Array<string> | OptionsFn;
     label?: string;
+    prop?: string;
 }
 
-type InputType = 'text' | 'select';
+type InputType = 'text' | 'select' | 'livenumber';
 
 interface PrefillFn {
     (runCmd: RunCmdFn): string | Promise<string>;
@@ -85,8 +97,8 @@ const CMDS = {
     // ...stoneCmds,
     // not sure where/if these should live yet
     fh: {
-        id: Symbol('focus_handler.copy'),
-        name: 'Copy focus handler',
+        id: 'focus_handler.copy',
+        label: 'Copy focus handler',
         args: [
             {
                 type: 'text',
@@ -99,27 +111,30 @@ const CMDS = {
         exec: () => {},
     },
     xz: {
-        id: Symbol('zephyr.exit'),
-        name: 'Exit Zephyr',
+        id: 'zephyr.exit',
+        label: 'Exit Zephyr',
         exec: () => figma.closePlugin(),
         // hide: true,
     },
     ...internalCmds,
-};
+} as CmdGroup;
 
-// @ts-ignore
-Object.entries(CMDS).forEach(([bind, cmd]) => (cmd.bind = bind));
-// @ts-ignore
-Object.entries(CMDS).forEach(([bind, parent]) => {
-    // @ts-ignore
-    if (parent.children) {
-        // @ts-ignore
-        Object.entries(parent.children).forEach(([bind, cmd]) => {
-            // @ts-ignore
-            cmd.bind = parent.bind + bind;
-        });
-    }
-});
-const arrayedCommands = Object.values(CMDS) as Array<Cmd<any>>;
-export default arrayedCommands;
-export { RunCmdFn, Cmd };
+function isCmd(obj: Cmd<any> | CmdFamily): obj is Cmd<any> {
+    return (obj as Cmd<any>).exec !== undefined;
+}
+
+const concatNames = (prelabel, name) => (prelabel.length ? prelabel + ' - ' + name : name);
+
+function flattenCmds(cmds: CmdGroup, allCmds = [], prebind = '', prelabel = '') {
+    Object.entries(cmds).forEach(([bind, cmd]) => {
+        if (isCmd(cmd)) {
+            cmd.label = concatNames(prelabel, cmd.label);
+            cmd.bind = prebind + bind;
+            allCmds.push(cmd);
+        } else flattenCmds(cmd.children, allCmds, prebind + bind, concatNames(prelabel, cmd.label));
+    });
+    return allCmds;
+}
+const flattened = flattenCmds(CMDS);
+export default flattened;
+export { RunCmdFn, Cmd, CmdFamily, CmdGroup, CMDS as NestedCmds };

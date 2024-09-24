@@ -1,23 +1,26 @@
+import { CmdGroup } from '../commands';
+
 export default {
     rs: {
-        bind: 'rs',
-        name: 'Rename selection',
-        args: [{name: 'newName', type: 'text', label: 'name', prefill: (runCmd) => runCmd({bind: 'gns'})}],
-        exec: ({newName}) => {
+        id: 'selection.rename',
+        label: 'Rename selection',
+        args: [{ name: 'newName', type: 'text', label: 'name', prefill: (runCmd) => runCmd({ bind: 'gns' }) }],
+        exec: ({ newName }) => {
             figma.currentPage.selection.forEach((node) => (node.name = newName));
             return figma.currentPage.selection;
         },
     },
     ds: {
-        bind: 'ds',
-        name: 'Delete selection',
+        id: 'selection.delete',
+        label: 'Delete selection',
         exec: () => {
             figma.currentPage.selection.forEach((node) => node.remove());
         },
     },
     gns: {
-        name: 'Get name of selection',
+        id: 'selection.get_name',
+        label: 'Get name of selection',
         exec: () => figma.currentPage.selection[0]?.name || '',
         hide: true,
     },
-}
+} as CmdGroup;

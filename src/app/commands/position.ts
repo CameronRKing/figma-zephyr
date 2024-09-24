@@ -1,16 +1,20 @@
 import { curr } from '../utils';
+import { CmdGroup } from '../commands';
 
 export default {
     gp: {
-        name: 'Get position of selection',
+        id: 'selection.position.get',
+        label: 'Get position of selection',
         exec() {
             if (curr().length !== 1) return { x: null, y: null };
             const { x, y } = curr()[0];
             return { x, y };
         },
+        hide: true,
     },
     sp: {
-        name: 'Set position of selection',
+        id: 'selection.position.set',
+        label: 'Set position of selection',
         args: [
             { name: 'x', type: 'text', label: 'x' },
             { name: 'y', type: 'text', label: 'y' },
@@ -24,4 +28,4 @@ export default {
             return curr();
         },
     },
-};
+} as CmdGroup;
