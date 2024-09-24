@@ -1,10 +1,12 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 // import { Text } from 'react-figma-plugin-ds';
 import '../styles/ui.css';
 import '../styles/util.css';
-import commands, {RunCmdFn, Cmd} from '../commands';
+import commands, { RunCmdFn, Cmd } from '../commands';
 import ArgsGetter from './ArgsGetter';
+
+const visibleCmds = commands.filter((cmd) => !cmd.hide);
 
 const useCmds = (parent) => {
     const [cbs, setCbs] = useState({});
@@ -24,7 +26,7 @@ const useCmds = (parent) => {
                     [id]: (retVal) => {
                         // clean up handler/timeout
                         clearTimeout(timeout);
-                        const newCbs = {...cbs};
+                        const newCbs = { ...cbs };
                         delete newCbs[id];
                         setCbs(newCbs);
 
@@ -34,15 +36,15 @@ const useCmds = (parent) => {
                 });
 
                 // run cmd
-                parent.postMessage({pluginMessage: {...msg, resId: id}}, '*');
+                parent.postMessage({ pluginMessage: { ...msg, resId: id } }, '*');
             });
         },
         [cbs]
     );
 
     const respondToMessage = React.useCallback(
-        ({pluginMessage}) => {
-            const {resId, retVal} = pluginMessage;
+        ({ pluginMessage }) => {
+            const { resId, retVal } = pluginMessage;
             // console.log({ resId, retVal });
             if (resId && cbs[resId]) cbs[resId](retVal);
         },
@@ -66,7 +68,7 @@ const useCmds = (parent) => {
 
 const App = ({}) => {
     const [inputVal, setInputVal] = useState('');
-    const [matches, setMatches] = useState(commands);
+    const [matches, setMatches] = useState(visibleCmds);
     const [match, setMatch] = useState<Cmd<any>>(null);
 
     const runCmd = useCmds(window.parent);
@@ -74,18 +76,19 @@ const App = ({}) => {
     useEffect(() => {
         if (!inputVal.endsWith(' ')) {
             if (inputVal === '') {
-                setMatches(commands);
+                setMatches(visibleCmds);
             } else {
-                setMatches(commands.filter((cmd) => cmd.bind.match(inputVal) || cmd.name.match(inputVal)));
+                setMatches(visibleCmds.filter((cmd) => cmd.bind.match(inputVal) || cmd.name.match(inputVal)));
             }
             return;
         }
 
         const bind = inputVal.replace(' ', '');
-        const match = commands.find((cmd) => cmd.bind === bind);
+        const match = visibleCmds.find((cmd) => cmd.bind === bind);
         if (match) {
+            // todo: update typing
             setMatch(match);
-            if (!match.args) runCmd({bind: match.bind}).then(() => setMatch(null));
+            if (!match.args) runCmd({ bind: match.bind }).then(() => setMatch(null));
         } else {
             setMatch(undefined);
         }
@@ -95,7 +98,7 @@ const App = ({}) => {
 
     const fullRunCmd = React.useCallback(
         (payload) => {
-            runCmd({bind: match.bind, payload}).then(() => setMatch(null));
+            runCmd({ bind: match.bind, payload }).then(() => setMatch(null));
         },
         [match]
     );
@@ -107,7 +110,7 @@ const App = ({}) => {
 
     const maybeEscape = React.useCallback((evt: React.KeyboardEvent) => {
         if (evt.key === 'Escape') {
-            runCmd({bind: 'xz'});
+            runCmd({ bind: 'xz' });
         }
     }, []);
 
@@ -133,7 +136,7 @@ const App = ({}) => {
                         autoFocus
                         onKeyDown={maybeEscape}
                     />
-                    <table style={{paddingLeft: 4}}>
+                    <table style={{ paddingLeft: 4 }}>
                         <tbody>
                             {matches.map((cmd) => (
                                 <tr key={cmd.bind}>
@@ -143,7 +146,7 @@ const App = ({}) => {
                                         </pre>
                                     </td>
                                     <td>-</td>
-                                    <td style={{paddingTop: 4, paddingBottom: 4}}>{cmd.name}</td>
+                                    <td style={{ paddingTop: 4, paddingBottom: 4 }}>{cmd.name}</td>
                                 </tr>
                             ))}
                         </tbody>
