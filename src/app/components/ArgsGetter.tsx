@@ -1,11 +1,15 @@
 import * as React from 'react';
-import {Cmd, RunCmdFn} from '../commands';
+import { Cmd, RunCmdFn } from '../commands';
 import TextInput from './TextInput';
 import SelectInput from './SelectInput';
 import RingLaceInput from './RingLaceInput';
 import PositionInput from './PositionInput';
 import LaceLineInput from './LaceLineInput';
 import LiveNumber from './LiveNumber';
+
+function EmptyInput() {
+    return <></>;
+}
 
 export default ({
     args,
@@ -30,7 +34,7 @@ export default ({
 
     const onInputFinish = React.useCallback(
         (argVal) => {
-            setRetVal({...retVal, [args[currArg].name]: argVal});
+            setRetVal({ ...retVal, [args[currArg].name]: argVal });
             setCurrArg(currArg + 1);
         },
         [currArg, retVal]
@@ -44,8 +48,8 @@ export default ({
             ringLace: RingLaceInput,
             position: PositionInput,
             laceLine: LaceLineInput,
-            undefined: 'div',
+            undefined: EmptyInput,
         }[args[currArg]?.type],
-        {...args[currArg], onFinish: onInputFinish, onCancel, runCmd}
+        { ...args[currArg], onFinish: onInputFinish, onCancel, runCmd }
     );
 };
