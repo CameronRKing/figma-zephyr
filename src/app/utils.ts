@@ -84,7 +84,9 @@ export const preloadSelectedFonts = () =>
     Promise.all(
         curr()
             .filter((node) => node.type === 'TEXT')
-            .map((node) => Promise.all(node.getRangeAllFontNames(0, node.characters.length).map(figma.loadFontAsync)))
+            .map((node: TextNode) =>
+                Promise.all(node.getRangeAllFontNames(0, node.characters.length).map(figma.loadFontAsync))
+            )
     );
 
 // doesn't seem to work in practice--the plugin won't open when I add this call to startup

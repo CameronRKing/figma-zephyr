@@ -1,7 +1,10 @@
 import { clone, curr } from '../utils';
 import { CmdGroup } from '../commands';
 
-const currText = () => curr().filter((node) => node.type === 'TEXT');
+const currText = () =>
+    curr()
+        .filter((node) => node.type === 'TEXT')
+        .map((node) => node as TextNode);
 
 export default {
     // these commands need *guarding*
