@@ -79,10 +79,9 @@ const App = ({}) => {
                 setMatches(visibleCmds);
             } else {
                 setMatches(
-                    visibleCmds
-                        .filter((cmd) => cmd.bind.startsWith(inputVal))
-                        .concat(visibleCmds.filter((cmd) => cmd.bind.match(inputVal)))
-                        .concat(visibleCmds.filter((cmd) => cmd.label.match(inputVal)))
+                    visibleCmds.filter((cmd) => cmd.bind.startsWith(inputVal))
+                    // .concat(visibleCmds.filter((cmd) => cmd.bind.match(inputVal)))
+                    // .concat(visibleCmds.filter((cmd) => cmd.label.match(inputVal)))
                 );
             }
             return;
