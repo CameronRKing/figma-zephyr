@@ -3,6 +3,7 @@ import autolayoutCmds from './commands/autolayout';
 import layerCmds from './commands/layers';
 import pageCmds from './commands/pages';
 import positionCmds from './commands/position';
+import typographyCmds from './commands/typography';
 // import stoneCmds from './commands/stones';
 // import tensorCmds from './commands/tensor';
 
@@ -70,8 +71,10 @@ interface InputSeq<Args> {
     type: InputType;
     prefill?: string | PrefillFn;
     options?: Array<string> | OptionsFn;
+    // todo: split out props + improve typing
     label?: string;
     prop?: string;
+    propKey?: string;
 }
 
 type InputType = 'text' | 'select' | 'livenumber';
@@ -93,6 +96,7 @@ const CMDS = {
     ...layerCmds,
     ...pageCmds,
     ...positionCmds,
+    ...typographyCmds,
     // ...tensorCmds,
     // ...stoneCmds,
     // not sure where/if these should live yet

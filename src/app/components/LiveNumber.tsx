@@ -1,35 +1,37 @@
 import * as React from 'react';
-import {RunCmdFn} from '../commands';
-import {Text} from 'react-figma-plugin-ds';
+import { RunCmdFn } from '../commands';
+import { Text } from 'react-figma-plugin-ds';
 
 interface Props {
     label: string;
     prop: string;
+    propKey?: string;
     onFinish: (any) => void;
     onCancel: () => void;
     runCmd: RunCmdFn;
 }
 
-export default function LiveNumber({label, prop, onFinish, onCancel, runCmd}: Props) {
-    // there's a couple ways I could set this up
-    // the prefill & update could be handled by consumers as function parameters
-    // but since they'll all follow the same patter (or so I believe), why repeat myself?
-    // so it's better to have generic commands for getting & setting simple Node properties,
-    // then have the consumer of this component indicate only which property to look up
-
+export default function LiveNumber({ label, prop, propKey, onFinish, onCancel, runCmd }: Props) {
     const [initialVal, setInitialVal] = React.useState(0);
     const [currVal, setCurrVal] = React.useState(0);
 
     React.useEffect(() => {
-        runCmd({bind: 'getprop', payload: {prop}}).then((val) => {
-            console.log('received', prop, val);
+        let cmd;
+        if (propKey) {
+            cmd = runCmd({ bind: 'getobjprop', payload: { prop, key: propKey } });
+        } else {
+            cmd = runCmd({ bind: 'getprop', payload: { prop } });
+        }
+        cmd.then((val) => {
+            val = val === undefined ? 0 : val;
             setInitialVal(val);
             setCurrVal(val);
         });
-    }, [prop]);
+    }, [prop, propKey]);
 
     const broadcastChange = React.useCallback((val) => {
-        runCmd({bind: 'setprop', payload: {prop, val}});
+        if (propKey) runCmd({ bind: 'setobjprop', payload: { prop, key: propKey, val } });
+        else runCmd({ bind: 'setprop', payload: { prop, val } });
         setCurrVal(val);
     }, []);
 
@@ -37,16 +39,18 @@ export default function LiveNumber({label, prop, onFinish, onCancel, runCmd}: Pr
         (evt) => {
             switch (evt.key) {
                 case 'Escape':
-                    runCmd({bind: 'setprop', payload: {prop, val: initialVal}}).then(() => onCancel());
+                    if (propKey)
+                        runCmd({ bind: 'setobjprop', payload: { prop, key: propKey, val: initialVal } }).then(onCancel);
+                    else runCmd({ bind: 'setprop', payload: { prop, val: initialVal } }).then(onCancel);
                     break;
                 case ' ':
                 case 'Enter':
                     onFinish(currVal);
                     break;
-                case 'j':
+                case 'k':
                     broadcastChange(currVal + 1);
                     break;
-                case 'k':
+                case 'j':
                     broadcastChange(currVal - 1);
                     break;
                 default:
@@ -71,7 +75,7 @@ export default function LiveNumber({label, prop, onFinish, onCancel, runCmd}: Pr
                 type="number"
                 step="1"
                 value={currVal}
-                onChange={(evt) => broadcastChange(evt.target.value)}
+                onChange={(evt) => broadcastChange(+evt.target.value)}
                 onKeyDown={handleKeyCmd}
             />
         </>

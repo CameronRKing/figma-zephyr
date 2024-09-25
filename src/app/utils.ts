@@ -2,7 +2,7 @@ export const DPI = 114; // weird number, I know, but that's what experimentation
 
 // https://gist.github.com/JeremyJaydan/f7ba5f40574841b97d745f8f4ef88c07
 export function setRotation(node, angle) {
-    let {x, y, width, height, rotation} = node;
+    let { x, y, width, height, rotation } = node;
 
     const theta = angle * (Math.PI / 180);
     const originTheta = rotation * (Math.PI / 180);
@@ -62,14 +62,14 @@ export const numerifyFraction = (str) => {
 };
 
 export const centerInViewport = (node) => {
-    const {x, y} = figma.viewport.center;
+    const { x, y } = figma.viewport.center;
     node.x = x - node.width / 2;
     node.y = y - node.height / 2;
 };
 
 // https://www.figma.com/plugin-docs/editing-properties/
-export function clone(val) {
-    return JSON.parse(JSON.stringify(val));
+export function clone(val, overrides = {}) {
+    return Object.assign(JSON.parse(JSON.stringify(val)), overrides);
 }
 
 export function setFillScaleMode(node: RectangleNode, mode: ImagePaint['scaleMode']) {
@@ -79,3 +79,18 @@ export function setFillScaleMode(node: RectangleNode, mode: ImagePaint['scaleMod
 }
 
 export const curr = () => figma.currentPage.selection;
+
+export const preloadSelectedFonts = () =>
+    Promise.all(
+        curr()
+            .filter((node) => node.type === 'TEXT')
+            .map((node) => Promise.all(node.getRangeAllFontNames(0, node.characters.length).map(figma.loadFontAsync)))
+    );
+
+// doesn't seem to work in practice--the plugin won't open when I add this call to startup
+export const preloadAllFonts = async () =>
+    Promise.all(
+        await figma
+            .listAvailableFontsAsync()
+            .then((fonts) => fonts.map(({ fontName }) => figma.loadFontAsync(fontName)))
+    );
