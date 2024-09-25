@@ -3,7 +3,7 @@ import autolayoutCmds from './commands/autolayout';
 import layerCmds from './commands/layers';
 import pageCmds from './commands/pages';
 import positionCmds from './commands/position';
-import typographyCmds from './commands/typography';
+import typographyCmds from './commands/text';
 // import stoneCmds from './commands/stones';
 // import tensorCmds from './commands/tensor';
 

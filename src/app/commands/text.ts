@@ -11,10 +11,10 @@ export default {
     // they apply only to text nodes
     // should be available only when all selected nodes are text nodes
     t: {
-        label: 'Typography',
+        label: 'Text',
         children: {
             s: {
-                id: 'typography.size',
+                id: 'text.size',
                 label: '(Set) Size',
                 args: [{ name: 'size', type: 'livenumber', label: 'Font Size', prop: 'fontSize' }],
                 async exec({ size }) {
@@ -23,7 +23,7 @@ export default {
                 },
             },
             ls: {
-                id: 'typography.letter_spacing',
+                id: 'text.letter_spacing',
                 label: '(Set) Letter Spacing',
                 args: [
                     {
@@ -42,7 +42,7 @@ export default {
                 },
             },
             lh: {
-                id: 'typography.line_height',
+                id: 'text.line_height',
                 label: '(Set) Line Height',
                 args: [
                     {
@@ -64,7 +64,7 @@ export default {
                 },
             },
             ps: {
-                id: 'typography.paragraph_spacing',
+                id: 'text.paragraph_spacing',
                 label: '(Set) Paragraph Spacing',
                 args: [
                     {
@@ -83,7 +83,7 @@ export default {
                 label: 'Align',
                 children: {
                     l: {
-                        id: 'typography.align_left',
+                        id: 'text.align_left',
                         label: 'Left',
                         async exec() {
                             await preloadSelectedFonts();
@@ -91,7 +91,7 @@ export default {
                         },
                     },
                     c: {
-                        id: 'typography.align_center',
+                        id: 'text.align_center',
                         label: 'Center',
                         async exec() {
                             await preloadSelectedFonts();
@@ -99,7 +99,7 @@ export default {
                         },
                     },
                     r: {
-                        id: 'typography.align_right',
+                        id: 'text.align_right',
                         label: 'Right',
                         async exec() {
                             await preloadSelectedFonts();
@@ -107,7 +107,7 @@ export default {
                         },
                     },
                     j: {
-                        id: 'typography.align_justified',
+                        id: 'text.align_justified',
                         label: 'Justified',
                         async exec() {
                             await preloadSelectedFonts();
@@ -115,7 +115,7 @@ export default {
                         },
                     },
                     t: {
-                        id: 'typography.align_top',
+                        id: 'text.align_top',
                         label: 'Top',
                         async exec() {
                             await preloadSelectedFonts();
@@ -123,7 +123,7 @@ export default {
                         },
                     },
                     m: {
-                        id: 'typography.align_middle',
+                        id: 'text.align_middle',
                         label: 'Middle (Vertical)',
                         async exec() {
                             await preloadSelectedFonts();
@@ -131,7 +131,7 @@ export default {
                         },
                     },
                     b: {
-                        id: 'typography.align_bottom',
+                        id: 'text.align_bottom',
                         label: 'Align Bottom',
                         async exec() {
                             await preloadSelectedFonts();
@@ -141,7 +141,7 @@ export default {
                 },
             },
             aw: {
-                id: 'typography.auto_width',
+                id: 'text.auto_width',
                 label: 'Auto Width',
                 async exec() {
                     await preloadSelectedFonts();
@@ -149,7 +149,7 @@ export default {
                 },
             },
             ah: {
-                id: 'typography.auto_height',
+                id: 'text.auto_height',
                 label: 'Auto Height',
                 async exec() {
                     await preloadSelectedFonts();
@@ -157,7 +157,7 @@ export default {
                 },
             },
             fs: {
-                id: 'typography.fixed_size',
+                id: 'text.fixed_size',
                 label: 'Fixed Size',
                 async exec() {
                     await preloadSelectedFonts();
@@ -165,7 +165,7 @@ export default {
                 },
             },
             t: {
-                id: 'typography.truncate',
+                id: 'text.truncate',
                 label: 'Truncate',
                 async exec() {
                     await preloadSelectedFonts();
@@ -176,7 +176,7 @@ export default {
                 label: 'Case',
                 children: {
                     o: {
-                        id: 'typography.case.original',
+                        id: 'text.case.original',
                         label: 'Original',
                         async exec() {
                             await preloadSelectedFonts();
@@ -184,7 +184,7 @@ export default {
                         },
                     },
                     u: {
-                        id: 'typography.case.upper',
+                        id: 'text.case.upper',
                         label: 'Upper',
                         async exec() {
                             await preloadSelectedFonts();
@@ -192,7 +192,7 @@ export default {
                         },
                     },
                     l: {
-                        id: 'typography.case.lower',
+                        id: 'text.case.lower',
                         label: 'Lower',
                         async exec() {
                             await preloadSelectedFonts();
@@ -200,7 +200,7 @@ export default {
                         },
                     },
                     t: {
-                        id: 'typography.case.title',
+                        id: 'text.case.title',
                         label: 'Title',
                         async exec() {
                             await preloadSelectedFonts();
@@ -208,7 +208,7 @@ export default {
                         },
                     },
                     sc: {
-                        id: 'typography.case.small_caps',
+                        id: 'text.case.small_caps',
                         label: 'Small Caps',
                         async exec() {
                             await preloadSelectedFonts();
@@ -216,7 +216,7 @@ export default {
                         },
                     },
                     scf: {
-                        id: 'typography.case.small_caps_forced',
+                        id: 'text.case.small_caps_forced',
                         label: 'Small Caps - Forced',
                         async exec() {
                             await preloadSelectedFonts();
