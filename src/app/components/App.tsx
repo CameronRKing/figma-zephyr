@@ -78,7 +78,12 @@ const App = ({}) => {
             if (inputVal === '') {
                 setMatches(visibleCmds);
             } else {
-                setMatches(visibleCmds.filter((cmd) => cmd.bind.match(inputVal) || cmd.label.match(inputVal)));
+                setMatches(
+                    visibleCmds
+                        .filter((cmd) => cmd.bind.startsWith(inputVal))
+                        .concat(visibleCmds.filter((cmd) => cmd.bind.match(inputVal)))
+                        .concat(visibleCmds.filter((cmd) => cmd.label.match(inputVal)))
+                );
             }
             return;
         }
