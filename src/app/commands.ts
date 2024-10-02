@@ -3,6 +3,7 @@ import autolayoutCmds from './commands/autolayout';
 import layerCmds from './commands/layers';
 import pageCmds from './commands/pages';
 import positionCmds from './commands/position';
+import strokeCmds from './commands/stroke';
 import typographyCmds from './commands/text';
 // import stoneCmds from './commands/stones';
 // import tensorCmds from './commands/tensor';
@@ -96,6 +97,7 @@ const CMDS = {
     ...layerCmds,
     ...pageCmds,
     ...positionCmds,
+    ...strokeCmds,
     ...typographyCmds,
     // ...tensorCmds,
     // ...stoneCmds,
