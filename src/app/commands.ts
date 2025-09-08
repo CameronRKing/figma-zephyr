@@ -6,7 +6,7 @@ import positionCmds from './commands/position';
 import strokeCmds from './commands/stroke';
 import typographyCmds from './commands/text';
 // import stoneCmds from './commands/stones';
-// import tensorCmds from './commands/tensor';
+import tensorCmds from './commands/tensor';
 
 /*
 
@@ -78,7 +78,7 @@ interface InputSeq<Args> {
     propKey?: string;
 }
 
-type InputType = 'text' | 'select' | 'livenumber';
+type InputType = 'text' | 'select' | 'livenumber' | 'ringLace' | 'position' | 'laceLine';
 
 interface PrefillFn {
     (runCmd: RunCmdFn): string | Promise<string>;
@@ -99,7 +99,7 @@ const CMDS = {
     ...positionCmds,
     ...strokeCmds,
     ...typographyCmds,
-    // ...tensorCmds,
+    ...tensorCmds,
     // ...stoneCmds,
     // not sure where/if these should live yet
     fh: {
